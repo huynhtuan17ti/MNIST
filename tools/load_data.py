@@ -3,28 +3,15 @@ import os
 import numpy as np
 import gzip
 import argparse
-
-def load_mnist(path, s = 'train'):
-    labels_path = os.path.join(path, "{}-labels-idx1-ubyte.gz".format(s))
-    images_path = os.path.join(path, "{}-images-idx3-ubyte.gz".format(s))
-
-    with gzip.open(labels_path, 'rb') as lbpath:
-        lbpath.read(8)
-        buffer = lbpath.read()
-        labels = np.frombuffer(buffer, dtype = np.uint8)
-    
-    with gzip.open(images_path, 'rb') as imgpath:
-        imgpath.read(16)
-        buffer = imgpath.read()
-        images = np.frombuffer(buffer, dtype = np.uint8).reshape(len(labels), 28, 28).astype(np.float64)
-
-    return images, labels
+import sys
+sys.path.append('/home/ryan/Machine_Learning/MNIST/')
+from custom_datasets import load_mnist
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('--path', default='F:\\Bai Tap\\Nhap mon CNTT - TH\\MNIST\\data',
+    ap.add_argument('--path', default='./data/unzip',
                                 help = 'path to data folder')
-    ap.add_argument('--save', default='F:\\Bai Tap\\Nhap mon CNTT - TH\\MNIST\\result',
+    ap.add_argument('--save', default='./results',
                                 help = 'path to save result')
     args = ap.parse_args()
 
@@ -42,5 +29,5 @@ if __name__ == '__main__':
     plt.tight_layout()
     #save img
     save_path = args.save
-    plt.savefig(os.path.join(save_path, 'result.png'))
+    plt.savefig(os.path.join(save_path, 'samples.png'))
     plt.show()
