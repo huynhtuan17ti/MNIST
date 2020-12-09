@@ -1,3 +1,6 @@
 matplotlib
 numpy
 os-sys
+torch
+torchvision
+faiss
