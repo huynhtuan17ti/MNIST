@@ -1,7 +1,7 @@
 import torch
 import torchvision
 from torchvision import transforms
-from models import CNN_model, FaissKNeighbors
+from models import CNN_model, FaissKNeighbors, Average_Samples
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 import matplotlib.pyplot as plt
@@ -69,11 +69,28 @@ def inference_CNN():
     torch.cuda.empty_cache()
     return acc_CNN
     
+def inference_Average_Samples():
+    print('-'*70)
+    print("\tStarting predict in test set with Average_Samples !")
+    print('-'*70)
+    train, target = load_mnist()
+    model = Average_Samples()
+    model.fit(train, target)
+    print('Loading model successfully!\n')
+    
+    test, target = load_mnist(s = 't10k')
+    correct, acc_AS = model.score(test, target, arith_ratio = arith_ratio)
+
+    print('\nAverage_Samples model: Accuracy: {}/{} ({:.0f}%)\n'.format(correct, len(target),
+                                                                        100. * correct/len(target)))
+    return acc_AS
+
 
 def inference_KNN():
     print('-'*70)
     print("\tStarting predict in test set with {} nearest neighbors !".format(N_NEIGHBORS))
     print('-'*70)
+
     train, target = load_mnist()
     nsamples, nx, ny = train.shape
     d2_train = train.reshape((nsamples, nx*ny))
@@ -89,11 +106,12 @@ def inference_KNN():
                                                                         100. * correct/len(target)))
     return acc_KNN
 
-def plot_result(acc_CNN, acc_KNN):
+def plot_result(acc_CNN, acc_KNN, acc_AS):
     fig = plt.figure()
     plt.plot(np.arange(arith_ratio, 10001, arith_ratio), acc_CNN, color = 'blue')
     plt.plot(np.arange(arith_ratio, 10001, arith_ratio), acc_KNN, color = 'red')
-    plt.legend(['Avg. Accuracy CNN', 'Avg. Accuracy KNN'], loc = 'upper right')
+    plt.plot(np.arange(arith_ratio, 10001, arith_ratio), acc_AS, color = 'orange')
+    plt.legend(['Avg. Accuracy CNN', 'Avg. Accuracy KNN', 'Avg. Accuracy Average Samples'], loc = 'upper right')
     plt.xlabel('number of test examples')
     plt.ylabel('Avg. Accuracy')
     plt.savefig(os.path.join('./results', 'result_acc.png'))
@@ -102,5 +120,6 @@ if __name__ == '__main__':
     init()
     acc_CNN = inference_CNN()
     acc_KNN = inference_KNN()
+    acc_AS =  inference_Average_Samples()
     if save:
-        plot_result(acc_CNN, acc_KNN)
+        plot_result(acc_CNN, acc_KNN, acc_AS)
