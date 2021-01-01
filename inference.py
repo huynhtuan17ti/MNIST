@@ -112,7 +112,7 @@ def plot_result(acc_CNN, acc_KNN, acc_AS):
     plt.plot(np.arange(arith_ratio, 10001, arith_ratio), acc_KNN, color = 'red')
     plt.plot(np.arange(arith_ratio, 10001, arith_ratio), acc_AS, color = 'orange')
     plt.legend(['Avg. Accuracy CNN', 'Avg. Accuracy KNN', 'Avg. Accuracy Average Samples'], loc = 'upper right')
-    plt.xlabel('number of test examples')
+    plt.xlabel('number of test samples')
     plt.ylabel('Avg. Accuracy')
     plt.savefig(os.path.join('./results', 'result_acc.png'))
 
